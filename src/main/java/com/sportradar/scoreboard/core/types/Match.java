@@ -14,11 +14,15 @@ public class Match {
     private final long startTimestamp = System.nanoTime();
 
     public void updateScore(int homeScore, int awayScore) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (homeScore < 0 || awayScore < 0) {
+            throw new IllegalArgumentException("Score cannot be negative");
+        }
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
     }
 
     public int getTotalScore() {
-        throw new UnsupportedOperationException("Not implemented");
+        return homeScore + awayScore;
     }
 
     public record MatchSides(String homeTeam, String awayTeam) {
