@@ -1,17 +1,25 @@
 package com.sportradar.scoreboard.core.types;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @Builder
-public abstract class Match {
+@Getter
+@EqualsAndHashCode
+public class Match {
     private final MatchSides sides;
     private int homeScore;
     private int awayScore;
     private final long startTimestamp = System.nanoTime();
 
-    public abstract void updateScore(int homeScore, int awayScore);
+    public void updateScore(int homeScore, int awayScore) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
-    public abstract void getTotalScore();
+    public int getTotalScore() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
     public record MatchSides(String homeTeam, String awayTeam) {
     }
