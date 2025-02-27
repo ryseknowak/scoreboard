@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 @AllArgsConstructor
-class ScoreBoardService implements LiveScoreBoard {
+public class ScoreBoardService implements LiveScoreBoard {
 
     private MatchRepository matchRepository;
 
