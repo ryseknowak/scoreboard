@@ -13,4 +13,6 @@ public interface MatchRepository {
     Optional<Match> findBySides(Match.MatchSides sides);
 
     List<Match> findAll();
+
+    boolean isTeamPlaying(String team);
 }
