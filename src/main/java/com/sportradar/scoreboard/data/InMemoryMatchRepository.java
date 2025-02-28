@@ -32,4 +32,10 @@ public class InMemoryMatchRepository implements MatchRepository {
     public List<Match> findAll() {
         throw new UnsupportedOperationException("Not implemented");
     }
+
+    @Override
+    public boolean isTeamPlaying(String team) {
+        return matches.keySet().stream()
+                .anyMatch(sides -> sides.homeTeam().equals(team) || sides.awayTeam().equals(team));
+    }
 }
