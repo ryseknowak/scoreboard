@@ -3,10 +3,12 @@ package com.sportradar.scoreboard.core.ports.types;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Builder
 @Getter
 @EqualsAndHashCode
+@RequiredArgsConstructor
 public class Match {
     private final MatchSides sides;
     private int homeScore;
@@ -25,6 +27,7 @@ public class Match {
         return homeScore + awayScore;
     }
 
+    @Builder
     public record MatchSides(String homeTeam, String awayTeam) {
     }
 }
