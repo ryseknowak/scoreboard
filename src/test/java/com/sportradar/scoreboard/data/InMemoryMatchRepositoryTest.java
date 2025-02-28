@@ -5,8 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class InMemoryMatchRepositoryTest {
 
@@ -45,5 +47,30 @@ class InMemoryMatchRepositoryTest {
         assertThat(repository.isTeamPlaying(TEAM_1)).isTrue();
         assertThat(repository.isTeamPlaying(TEAM_2)).isTrue();
         assertThat(repository.isTeamPlaying(TEAM_3)).isFalse();
+    }
+
+    @Test
+    void deleteBySidesRemovesMatchFromStore() {
+        var match1 = new Match(new Match.MatchSides(TEAM_1, TEAM_2));
+        var match2 = new Match(new Match.MatchSides(TEAM_3, TEAM_4));
+        matches.put(match1.getSides(), match1);
+        matches.put(match2.getSides(), match2);
+
+        repository.deleteBySides(match1.getSides());
+
+        assertThat(matches)
+                .doesNotContainKey(match1.getSides())
+                .containsKey(match2.getSides());
+    }
+
+    @Test
+    void deleteBySidesThrowsExceptionWhenMatchDoesNotExist() {
+        var match1 = new Match(new Match.MatchSides(TEAM_1, TEAM_2));
+        var nonExistingMatchSides = new Match.MatchSides(TEAM_3, TEAM_4);
+        matches.put(match1.getSides(), match1);
+
+        assertThatThrownBy(() -> repository.deleteBySides(nonExistingMatchSides))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Match not found");
     }
 }
