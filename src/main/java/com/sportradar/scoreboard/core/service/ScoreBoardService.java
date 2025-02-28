@@ -25,7 +25,8 @@ public class ScoreBoardService implements LiveScoreBoard {
 
     @Override
     public void endGame(String homeTeam, String awayTeam) {
-        throw new UnsupportedOperationException("Not implemented");
+        validateTeams(homeTeam, awayTeam);
+        matchRepository.deleteBySides(new Match.MatchSides(homeTeam, awayTeam));
     }
 
     @Override
@@ -39,14 +40,18 @@ public class ScoreBoardService implements LiveScoreBoard {
     }
 
     private void validateNewMatchCreation(String homeTeam, String awayTeam) {
+        validateTeams(homeTeam, awayTeam);
+        if (matchRepository.isTeamPlaying(homeTeam) || matchRepository.isTeamPlaying(awayTeam)) {
+            throw new IllegalArgumentException("Team is already playing");
+        }
+    }
+
+    private static void validateTeams(String homeTeam, String awayTeam) {
         if (isBlank(homeTeam) || isBlank(awayTeam)) {
             throw new IllegalArgumentException("Home and away team names must be provided");
         }
         if (Objects.equals(homeTeam, awayTeam)) {
             throw new IllegalArgumentException("Home and away teams must be different");
-        }
-        if (matchRepository.isTeamPlaying(homeTeam) || matchRepository.isTeamPlaying(awayTeam)) {
-            throw new IllegalArgumentException("Team is already playing");
         }
     }
 }
