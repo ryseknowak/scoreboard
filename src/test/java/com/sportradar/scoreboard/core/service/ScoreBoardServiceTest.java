@@ -81,6 +81,41 @@ class ScoreBoardServiceTest {
         }
     }
 
+    @Nested
+    class EndGameTests {
+        @Test
+        void endGameShouldCallRepositoryToDeleteMatch() {
+            var homeTeam = "team1";
+            var awayTeam = "team2";
+            var argCaptor = ArgumentCaptor.forClass(Match.MatchSides.class);
+
+            scoreBoard.endGame(homeTeam, awayTeam);
+
+            verify(matchRepository).deleteBySides(argCaptor.capture());
+            assertThat(argCaptor.getValue())
+                    .usingRecursiveComparison()
+                    .isEqualTo(Match.MatchSides.builder()
+                            .homeTeam(homeTeam)
+                            .awayTeam(awayTeam)
+                            .build());
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {"null, away", "home, null", ", away", "home,", "null,null", ","}, nullValues = {"null"})
+        void endGameShouldThrowExceptionWhenHomeOrAwayTeamIsNullOrEmpty(String homeTeam, String awayTeam) {
+            assertThatThrownBy(() -> scoreBoard.endGame(homeTeam, awayTeam))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Home and away team names must be provided");
+        }
+
+        @Test
+        void endGameShouldThrowExceptionWhenHomeAndAwayTeamsAreSame() {
+            assertThatThrownBy(() -> scoreBoard.endGame("team", "team"))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Home and away teams must be different");
+        }
+    }
+
     private static Match getExpectedMatch(String homeTeam, String awayTeam) {
         return Match.builder()
                 .sides(Match.MatchSides.builder()
