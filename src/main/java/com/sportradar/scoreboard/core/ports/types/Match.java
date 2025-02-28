@@ -1,13 +1,13 @@
 package com.sportradar.scoreboard.core.ports.types;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+
+import static lombok.AccessLevel.PRIVATE;
 
 @Builder
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor(access = PRIVATE)
 @RequiredArgsConstructor
 public class Match {
     private final MatchSides sides;

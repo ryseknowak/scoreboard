@@ -15,7 +15,7 @@ public class InMemoryMatchRepository implements MatchRepository {
 
     @Override
     public void save(Match match) {
-        throw new UnsupportedOperationException("Not implemented");
+        matches.put(match.getSides(), match);
     }
 
     @Override
