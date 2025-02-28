@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.core.types;
+package com.sportradar.scoreboard.core.ports.types;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

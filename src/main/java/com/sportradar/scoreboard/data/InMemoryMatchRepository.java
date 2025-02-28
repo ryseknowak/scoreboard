@@ -1,7 +1,7 @@
 package com.sportradar.scoreboard.data;
 
 import com.sportradar.scoreboard.core.ports.MatchRepository;
-import com.sportradar.scoreboard.core.types.Match;
+import com.sportradar.scoreboard.core.ports.types.Match;
 import lombok.AllArgsConstructor;
 
 import java.util.List;

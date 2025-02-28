@@ -1,5 +1,6 @@
-package com.sportradar.scoreboard.core.types;
+package com.sportradar.scoreboard.core.ports.types;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -51,4 +52,11 @@ class MatchTest {
         assertThat(match.getTotalScore()).isEqualTo(homeScore + awayScore);
     }
 
+    @Test
+    void twoMatchesCreatedOneByOneHaveGrowingTimestamps() {
+        var match1 = Match.builder().build();
+        var match2 = Match.builder().build();
+
+        assertThat(match1.getStartTimestamp()).isLessThan(match2.getStartTimestamp());
+    }
 }

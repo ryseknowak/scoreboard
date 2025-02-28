@@ -1,6 +1,6 @@
 package com.sportradar.scoreboard.core.ports;
 
-import com.sportradar.scoreboard.core.types.Match;
+import com.sportradar.scoreboard.core.ports.types.Match;
 
 import java.util.List;
 import java.util.Optional;
