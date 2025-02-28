@@ -6,6 +6,9 @@ import com.sportradar.scoreboard.core.ports.types.Match;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
+
+import static io.micrometer.common.util.StringUtils.isBlank;
 
 @AllArgsConstructor
 public class ScoreBoardService implements LiveScoreBoard {
@@ -14,7 +17,10 @@ public class ScoreBoardService implements LiveScoreBoard {
 
     @Override
     public void startGame(String homeTeam, String awayTeam) {
-        throw new UnsupportedOperationException("Not implemented");
+        validateNewMatchCreation(homeTeam, awayTeam);
+        matchRepository.save(Match.builder()
+                .sides(new Match.MatchSides(homeTeam, awayTeam))
+                .build());
     }
 
     @Override
@@ -30,5 +36,17 @@ public class ScoreBoardService implements LiveScoreBoard {
     @Override
     public List<Match> getSummary() {
         throw new UnsupportedOperationException("Not implemented");
+    }
+
+    private void validateNewMatchCreation(String homeTeam, String awayTeam) {
+        if (isBlank(homeTeam) || isBlank(awayTeam)) {
+            throw new IllegalArgumentException("Home and away team names must be provided");
+        }
+        if (Objects.equals(homeTeam, awayTeam)) {
+            throw new IllegalArgumentException("Home and away teams must be different");
+        }
+        if (matchRepository.isTeamPlaying(homeTeam) || matchRepository.isTeamPlaying(awayTeam)) {
+            throw new IllegalArgumentException("Team is already playing");
+        }
     }
 }

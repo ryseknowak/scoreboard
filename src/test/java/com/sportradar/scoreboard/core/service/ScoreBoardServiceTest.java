@@ -64,7 +64,6 @@ class ScoreBoardServiceTest {
         @Test
         void startGameShouldThrowExceptionWhenHomeTeamIsAlreadyPlaying() {
             when(matchRepository.isTeamPlaying("home")).thenReturn(true);
-            when(matchRepository.isTeamPlaying("away")).thenReturn(false);
 
             assertThatThrownBy(() -> scoreBoard.startGame("home", "away"))
                     .isInstanceOf(IllegalArgumentException.class)
