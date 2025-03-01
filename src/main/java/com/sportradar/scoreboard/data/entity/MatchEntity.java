@@ -1,28 +1,21 @@
-package com.sportradar.scoreboard.core.ports.types;
+package com.sportradar.scoreboard.data.entity;
 
 import lombok.*;
 
 import static lombok.AccessLevel.PRIVATE;
 
-@Builder
 @Getter
+@Builder
 @EqualsAndHashCode
 @AllArgsConstructor(access = PRIVATE)
 @RequiredArgsConstructor
-public class Match {
+public class MatchEntity {
     private final MatchSides sides;
+    @Setter
     private int homeScore;
+    @Setter
     private int awayScore;
     private final long startTimestamp = System.nanoTime();
-
-    public void updateScore(int homeScore, int awayScore) {
-        this.homeScore = homeScore;
-        this.awayScore = awayScore;
-    }
-
-    public int getTotalScore() {
-        return homeScore + awayScore;
-    }
 
     @Builder
     public record MatchSides(String homeTeam, String awayTeam) {

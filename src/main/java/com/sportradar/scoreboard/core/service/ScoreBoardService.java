@@ -2,7 +2,7 @@ package com.sportradar.scoreboard.core.service;
 
 import com.sportradar.scoreboard.core.ports.LiveScoreBoard;
 import com.sportradar.scoreboard.core.ports.MatchRepository;
-import com.sportradar.scoreboard.core.ports.types.Match;
+import com.sportradar.scoreboard.core.ports.types.MatchDto;
 import lombok.AllArgsConstructor;
 
 import java.util.Comparator;
@@ -19,15 +19,13 @@ public class ScoreBoardService implements LiveScoreBoard {
     @Override
     public void startGame(String homeTeam, String awayTeam) {
         validateNewMatchCreation(homeTeam, awayTeam);
-        matchRepository.save(Match.builder()
-                .sides(new Match.MatchSides(homeTeam, awayTeam))
-                .build());
+        matchRepository.save(new MatchDto(homeTeam, awayTeam));
     }
 
     @Override
     public void endGame(String homeTeam, String awayTeam) {
         validateTeams(homeTeam, awayTeam);
-        matchRepository.deleteBySides(new Match.MatchSides(homeTeam, awayTeam));
+        matchRepository.deleteByTeams(homeTeam, awayTeam);
     }
 
     @Override
@@ -36,13 +34,13 @@ public class ScoreBoardService implements LiveScoreBoard {
         if (homeScore < 0 || awayScore < 0) {
             throw new IllegalArgumentException("Score cannot be negative");
         }
-        matchRepository.updateScore(new Match.MatchSides(homeTeam, awayTeam), homeScore, awayScore);
+        matchRepository.updateScore(homeTeam, awayTeam, homeScore, awayScore);
     }
 
     @Override
-    public List<Match> getSummary() {
-        var byTotalScoreReversedComparator = Comparator.comparingInt(Match::getTotalScore).reversed();
-        var byStartTimestampReversedComparator = Comparator.comparingLong(Match::getStartTimestamp).reversed();
+    public List<MatchDto> getSummary() {
+        var byTotalScoreReversedComparator = Comparator.comparingInt(MatchDto::getTotalScore).reversed();
+        var byStartTimestampReversedComparator = Comparator.comparingLong(MatchDto::getStartTimestamp).reversed();
         return matchRepository.findAll().stream()
                 .sorted(byTotalScoreReversedComparator
                         .thenComparing(byStartTimestampReversedComparator))

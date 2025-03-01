@@ -1,17 +1,17 @@
 package com.sportradar.scoreboard.core.ports;
 
-import com.sportradar.scoreboard.core.ports.types.Match;
+import com.sportradar.scoreboard.core.ports.types.MatchDto;
 
 import java.util.List;
 
 public interface MatchRepository {
-    void save(Match match);
+    void save(MatchDto match);
 
-    void deleteBySides(Match.MatchSides sides);
+    void deleteByTeams(String homeTeam, String awayTeam);
 
-    List<Match> findAll();
+    List<MatchDto> findAll();
 
     boolean isTeamPlaying(String team);
 
-    void updateScore(Match.MatchSides sides, int homeScore, int awayScore);
+    void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore);
 }

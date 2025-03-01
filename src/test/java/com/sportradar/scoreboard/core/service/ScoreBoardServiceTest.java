@@ -1,7 +1,7 @@
 package com.sportradar.scoreboard.core.service;
 
 import com.sportradar.scoreboard.core.ports.MatchRepository;
-import com.sportradar.scoreboard.core.ports.types.Match;
+import com.sportradar.scoreboard.core.ports.types.MatchDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class ScoreBoardServiceTest {
         void startGameShouldCallRepositoryToSaveMatchWhenNoTeamIsPlayingAlready() {
             var homeTeam = "team1";
             var awayTeam = "team2";
-            var argCaptor = ArgumentCaptor.forClass(Match.class);
+            var argCaptor = ArgumentCaptor.forClass(MatchDto.class);
             when(matchRepository.isTeamPlaying(homeTeam)).thenReturn(false);
             when(matchRepository.isTeamPlaying(awayTeam)).thenReturn(false);
 
@@ -42,11 +42,9 @@ class ScoreBoardServiceTest {
 
             verify(matchRepository).save(argCaptor.capture());
             var savedMatch = argCaptor.getValue();
-            assertThat(savedMatch.getStartTimestamp()).isNotZero();
             assertThat(savedMatch)
                     .usingRecursiveComparison()
-                    .ignoringFields("startTimestamp")
-                    .isEqualTo(getExpectedMatch(homeTeam, awayTeam));
+                    .isEqualTo(new MatchDto(homeTeam, awayTeam));
         }
 
         @ParameterizedTest
@@ -90,17 +88,14 @@ class ScoreBoardServiceTest {
         void endGameShouldCallRepositoryToDeleteMatch() {
             var homeTeam = "team1";
             var awayTeam = "team2";
-            var argCaptor = ArgumentCaptor.forClass(Match.MatchSides.class);
+            var homeTeamArgCaptor = ArgumentCaptor.forClass(String.class);
+            var awayTeamArgCaptor = ArgumentCaptor.forClass(String.class);
 
             scoreBoard.endGame(homeTeam, awayTeam);
 
-            verify(matchRepository).deleteBySides(argCaptor.capture());
-            assertThat(argCaptor.getValue())
-                    .usingRecursiveComparison()
-                    .isEqualTo(Match.MatchSides.builder()
-                            .homeTeam(homeTeam)
-                            .awayTeam(awayTeam)
-                            .build());
+            verify(matchRepository).deleteByTeams(homeTeamArgCaptor.capture(), awayTeamArgCaptor.capture());
+            assertThat(homeTeamArgCaptor.getValue()).isEqualTo(homeTeam);
+            assertThat(awayTeamArgCaptor.getValue()).isEqualTo(awayTeam);
         }
 
         @ParameterizedTest
@@ -131,7 +126,7 @@ class ScoreBoardServiceTest {
 
             scoreBoard.updateScore(homeTeam, awayTeam, homeScore, awayScore);
 
-            verify(matchRepository).updateScore(new Match.MatchSides(homeTeam, awayTeam), homeScore, awayScore);
+            verify(matchRepository).updateScore(homeTeam, awayTeam, homeScore, awayScore);
         }
 
         @ParameterizedTest
@@ -150,13 +145,13 @@ class ScoreBoardServiceTest {
     class GetSummaryTests {
 
         @Mock
-        private Match match1;
+        private MatchDto match1;
         @Mock
-        private Match match2;
+        private MatchDto match2;
         @Mock
-        private Match match3;
+        private MatchDto match3;
         @Mock
-        private Match match4;
+        private MatchDto match4;
 
         @BeforeEach
         void setUp() {
@@ -204,15 +199,6 @@ class ScoreBoardServiceTest {
 
             assertThat(resultSummary).containsExactly(match3, match2, match4, match1);
         }
-    }
-
-    private static Match getExpectedMatch(String homeTeam, String awayTeam) {
-        return Match.builder()
-                .sides(Match.MatchSides.builder()
-                        .homeTeam(homeTeam)
-                        .awayTeam(awayTeam)
-                        .build())
-                .build();
     }
 
 }
