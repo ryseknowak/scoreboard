@@ -116,6 +116,33 @@ class ScoreBoardServiceTest {
         }
     }
 
+    @Nested
+    class UpdateScoreTests {
+
+        @Test
+        void updateScoreShouldCallRepositoryToUpdateMatchScore() {
+            var homeTeam = "team1";
+            var awayTeam = "team2";
+            var homeScore = 1;
+            var awayScore = 2;
+
+            scoreBoard.updateScore(homeTeam, awayTeam, homeScore, awayScore);
+
+            verify(matchRepository).updateScore(new Match.MatchSides(homeTeam, awayTeam), homeScore, awayScore);
+        }
+
+        @ParameterizedTest
+        @CsvSource(delimiter = ':', textBlock = """
+                -1  :   0
+                 0  :  -1
+                """)
+        void updateScoreThrowsExceptionWhenNegativeScore(int homeScore, int awayScore) {
+            assertThatThrownBy(() -> scoreBoard.updateScore("home", "away", homeScore, awayScore))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Score cannot be negative");
+        }
+    }
+
     private static Match getExpectedMatch(String homeTeam, String awayTeam) {
         return Match.builder()
                 .sides(Match.MatchSides.builder()

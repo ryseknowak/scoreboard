@@ -42,4 +42,9 @@ public class InMemoryMatchRepository implements MatchRepository {
         return matches.keySet().stream()
                 .anyMatch(sides -> sides.homeTeam().equals(team) || sides.awayTeam().equals(team));
     }
+
+    @Override
+    public void updateScore(Match.MatchSides sides, int homeScore, int awayScore) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }

@@ -21,6 +21,8 @@ I had to make couple assumptions to make functional description of the task more
 - Solution do not accept nulls and empty Strings as Home or Away teams
 - As solution is meant for Football World Cup it should accept only positive scores
 - Same team cannot participate in 2 matches at once
+- Match cannot take place between same teams
+- Score can be lowered (e.g. when a goal was scored but disallowed by VAR or any other mistake was done)
 
 ### Technical limitations
 

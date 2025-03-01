@@ -15,4 +15,6 @@ public interface MatchRepository {
     List<Match> findAll();
 
     boolean isTeamPlaying(String team);
+
+    void updateScore(Match.MatchSides sides, int homeScore, int awayScore);
 }
