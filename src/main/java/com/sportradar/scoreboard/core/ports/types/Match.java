@@ -16,9 +16,6 @@ public class Match {
     private final long startTimestamp = System.nanoTime();
 
     public void updateScore(int homeScore, int awayScore) {
-        if (homeScore < 0 || awayScore < 0) {
-            throw new IllegalArgumentException("Score cannot be negative");
-        }
         this.homeScore = homeScore;
         this.awayScore = awayScore;
     }

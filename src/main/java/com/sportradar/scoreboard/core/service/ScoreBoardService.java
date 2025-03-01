@@ -31,7 +31,11 @@ public class ScoreBoardService implements LiveScoreBoard {
 
     @Override
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        throw new UnsupportedOperationException("Not implemented");
+        validateTeams(homeTeam, awayTeam);
+        if (homeScore < 0 || awayScore < 0) {
+            throw new IllegalArgumentException("Score cannot be negative");
+        }
+        matchRepository.updateScore(new Match.MatchSides(homeTeam, awayTeam), homeScore, awayScore);
     }
 
     @Override

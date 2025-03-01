@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class MatchTest {
@@ -14,26 +13,13 @@ class MatchTest {
             1   :   0
             0   :   1
             """)
-    void updateScoreWorksCorrectlyWhenPositiveScore(int homeScore, int awayScore) {
+    void updateScoreWorksCorrectly(int homeScore, int awayScore) {
         var match = Match.builder().build();
 
         match.updateScore(homeScore, awayScore);
 
         assertThat(match.getHomeScore()).isEqualTo(homeScore);
         assertThat(match.getAwayScore()).isEqualTo(awayScore);
-    }
-
-    @ParameterizedTest
-    @CsvSource(delimiter = ':', textBlock = """
-            -1  :   0
-             0  :  -1
-            """)
-    void updateScoreThrowsExceptionWhenNegativeScore(int homeScore, int awayScore) {
-        var match = Match.builder().build();
-
-        assertThatThrownBy(() -> match.updateScore(homeScore, awayScore))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Score cannot be negative");
     }
 
     @ParameterizedTest
