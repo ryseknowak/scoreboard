@@ -1,12 +1,11 @@
 package com.sportradar.scoreboard.core.ports.types;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-class MatchTest {
+class MatchDtoTest {
 
     @ParameterizedTest
     @CsvSource(delimiter = ':', textBlock = """
@@ -14,7 +13,7 @@ class MatchTest {
             0   :   1
             """)
     void updateScoreWorksCorrectly(int homeScore, int awayScore) {
-        var match = Match.builder().build();
+        var match = MatchDto.builder().build();
 
         match.updateScore(homeScore, awayScore);
 
@@ -30,19 +29,11 @@ class MatchTest {
             5   :   3
             """)
     void getTotalScoreCorrectlySumsUpHomeAndAwayScores(int homeScore, int awayScore) {
-        var match = Match.builder()
+        var match = MatchDto.builder()
                 .homeScore(homeScore)
                 .awayScore(awayScore)
                 .build();
 
         assertThat(match.getTotalScore()).isEqualTo(homeScore + awayScore);
-    }
-
-    @Test
-    void twoMatchesCreatedOneByOneHaveGrowingTimestamps() {
-        var match1 = Match.builder().build();
-        var match2 = Match.builder().build();
-
-        assertThat(match1.getStartTimestamp()).isLessThan(match2.getStartTimestamp());
     }
 }

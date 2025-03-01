@@ -1,7 +1,9 @@
 package com.sportradar.scoreboard.data;
 
 import com.sportradar.scoreboard.core.ports.MatchRepository;
-import com.sportradar.scoreboard.core.ports.types.Match;
+import com.sportradar.scoreboard.core.ports.types.MatchDto;
+import com.sportradar.scoreboard.data.entity.MatchEntity;
+import com.sportradar.scoreboard.data.mapper.MatchEntityMapper;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -11,25 +13,29 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class InMemoryMatchRepository implements MatchRepository {
 
-    private Map<Match.MatchSides, Match> matches;
+    private Map<MatchEntity.MatchSides, MatchEntity> matches;
+    private MatchEntityMapper matchEntityMapper;
 
     @Override
-    public void save(Match match) {
-        matches.put(match.getSides(), match);
+    public void save(MatchDto matchDto) {
+        var newEntity = matchEntityMapper.mapToEntity(matchDto);
+        matches.put(newEntity.getSides(), newEntity);
     }
 
     @Override
-    public void deleteBySides(Match.MatchSides sides) {
+    public void deleteByTeams(String homeTeam, String awayTeam) {
+        var sides = new MatchEntity.MatchSides(homeTeam, awayTeam);
         if (!matches.containsKey(sides)) {
-            throw new NoSuchElementException("Match not found");
+            throw new NoSuchElementException("MatchDto not found");
         }
         matches.remove(sides);
     }
 
     @Override
-    public List<Match> findAll() {
-        // TODO: separate the domain model from the data model later
-        return matches.values().stream().toList();
+    public List<MatchDto> findAll() {
+        return matches.values().stream()
+                .map(matchEntityMapper::mapToDto)
+                .toList();
     }
 
     @Override
@@ -39,10 +45,12 @@ public class InMemoryMatchRepository implements MatchRepository {
     }
 
     @Override
-    public void updateScore(Match.MatchSides sides, int homeScore, int awayScore) {
-        if (!matches.containsKey(sides)) {
-            throw new NoSuchElementException("Match not found");
+    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        var matchEntity = matches.get(new MatchEntity.MatchSides(homeTeam, awayTeam));
+        if (matchEntity == null) {
+            throw new NoSuchElementException("MatchDto not found");
         }
-        matches.get(sides).updateScore(homeScore, awayScore);
+        matchEntity.setHomeScore(homeScore);
+        matchEntity.setAwayScore(awayScore);
     }
 }

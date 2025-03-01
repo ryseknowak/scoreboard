@@ -1,9 +1,10 @@
 package com.sportradar.scoreboard.endtoend;
 
 import com.sportradar.scoreboard.core.ports.LiveScoreBoard;
-import com.sportradar.scoreboard.core.ports.types.Match;
+import com.sportradar.scoreboard.core.ports.types.MatchDto;
 import com.sportradar.scoreboard.core.service.ScoreBoardService;
 import com.sportradar.scoreboard.data.InMemoryMatchRepository;
+import com.sportradar.scoreboard.data.mapper.MatchEntityMapper;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class ScoreBoardEndToEndTest {
 
     @BeforeEach
     void setUp() {
-        scoreBoard = new ScoreBoardService(new InMemoryMatchRepository(new HashMap<>()));
+        scoreBoard = new ScoreBoardService(new InMemoryMatchRepository(new HashMap<>(), MatchEntityMapper.INSTANCE));
     }
 
     @Test
@@ -69,7 +70,7 @@ class ScoreBoardEndToEndTest {
                 getExpectedMatch(GERMANY, FRANCE, 2, 2));
     }
 
-    private static void assertMatchesSummarySnapshot(List<Match> summary, Match... expectedMatches) {
+    private static void assertMatchesSummarySnapshot(List<MatchDto> summary, MatchDto... expectedMatches) {
         assertThat(summary)
                 .usingRecursiveFieldByFieldElementComparator(RecursiveComparisonConfiguration.builder()
                         .withIgnoredFields("startTimestamp")
@@ -77,9 +78,10 @@ class ScoreBoardEndToEndTest {
                 .containsExactly(expectedMatches);
     }
 
-    private static Match getExpectedMatch(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        return Match.builder()
-                .sides(new Match.MatchSides(homeTeam, awayTeam))
+    private static MatchDto getExpectedMatch(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        return MatchDto.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
                 .homeScore(homeScore)
                 .awayScore(awayScore)
                 .build();
