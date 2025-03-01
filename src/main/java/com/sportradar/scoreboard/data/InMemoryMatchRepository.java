@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @AllArgsConstructor
 public class InMemoryMatchRepository implements MatchRepository {
@@ -25,11 +24,6 @@ public class InMemoryMatchRepository implements MatchRepository {
             throw new NoSuchElementException("Match not found");
         }
         matches.remove(sides);
-    }
-
-    @Override
-    public Optional<Match> findBySides(Match.MatchSides sides) {
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

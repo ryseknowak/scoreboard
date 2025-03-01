@@ -96,4 +96,16 @@ class InMemoryMatchRepositoryTest {
         assertThat(matches.get(matchSides).getHomeScore()).isEqualTo(1);
         assertThat(matches.get(matchSides).getAwayScore()).isEqualTo(2);
     }
+
+    @Test
+    void findAllReturnsAllMatches() {
+        var match1 = new Match(new Match.MatchSides(TEAM_1, TEAM_2));
+        var match2 = new Match(new Match.MatchSides(TEAM_3, TEAM_4));
+        matches.put(match1.getSides(), match1);
+        matches.put(match2.getSides(), match2);
+
+        var allMatches = repository.findAll();
+
+        assertThat(allMatches).containsExactlyInAnyOrder(match1, match2);
+    }
 }
