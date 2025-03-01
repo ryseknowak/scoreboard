@@ -5,6 +5,7 @@ import com.sportradar.scoreboard.core.ports.MatchRepository;
 import com.sportradar.scoreboard.core.ports.types.Match;
 import lombok.AllArgsConstructor;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,7 +41,12 @@ public class ScoreBoardService implements LiveScoreBoard {
 
     @Override
     public List<Match> getSummary() {
-        throw new UnsupportedOperationException("Not implemented");
+        var byTotalScoreReversedComparator = Comparator.comparingInt(Match::getTotalScore).reversed();
+        var byStartTimestampReversedComparator = Comparator.comparingLong(Match::getStartTimestamp).reversed();
+        return matchRepository.findAll().stream()
+                .sorted(byTotalScoreReversedComparator
+                        .thenComparing(byStartTimestampReversedComparator))
+                .toList();
     }
 
     private void validateNewMatchCreation(String homeTeam, String awayTeam) {
