@@ -2,6 +2,7 @@ package com.sportradar.scoreboard.core.service;
 
 import com.sportradar.scoreboard.core.ports.MatchRepository;
 import com.sportradar.scoreboard.core.ports.types.Match;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -140,6 +143,66 @@ class ScoreBoardServiceTest {
             assertThatThrownBy(() -> scoreBoard.updateScore("home", "away", homeScore, awayScore))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Score cannot be negative");
+        }
+    }
+
+    @Nested
+    class GetSummaryTests {
+
+        @Mock
+        private Match match1;
+        @Mock
+        private Match match2;
+        @Mock
+        private Match match3;
+        @Mock
+        private Match match4;
+
+        @BeforeEach
+        void setUp() {
+            when(matchRepository.findAll()).thenReturn(List.of(match1, match2, match3, match4));
+        }
+
+        @Test
+        void getSummaryShouldSortMatchesByTotalScoreFirst() {
+            when(match1.getTotalScore()).thenReturn(1);
+            when(match2.getTotalScore()).thenReturn(2);
+            when(match3.getTotalScore()).thenReturn(3);
+            when(match4.getTotalScore()).thenReturn(4);
+
+            var resultSummary = scoreBoard.getSummary();
+
+            assertThat(resultSummary).containsExactly(match4, match3, match2, match1);
+        }
+
+        @Test
+        void getSummaryShouldSortMatchesWithSameTotalScoreByStartTimestamp() {
+            when(match1.getTotalScore()).thenReturn(1);
+            when(match2.getTotalScore()).thenReturn(1);
+            when(match3.getTotalScore()).thenReturn(1);
+            when(match4.getTotalScore()).thenReturn(1);
+            when(match1.getStartTimestamp()).thenReturn(4L);
+            when(match2.getStartTimestamp()).thenReturn(3L);
+            when(match3.getStartTimestamp()).thenReturn(2L);
+            when(match4.getStartTimestamp()).thenReturn(1L);
+
+            var resultSummary = scoreBoard.getSummary();
+
+            assertThat(resultSummary).containsExactly(match1, match2, match3, match4);
+        }
+
+        @Test
+        void getSummaryShouldSortMatchesByTotalScoreAndStartTimestampWithPriorityOnTotalScore() {
+            when(match1.getTotalScore()).thenReturn(1);
+            when(match2.getTotalScore()).thenReturn(2);
+            when(match3.getTotalScore()).thenReturn(3);
+            when(match4.getTotalScore()).thenReturn(2);
+            when(match2.getStartTimestamp()).thenReturn(2L);
+            when(match4.getStartTimestamp()).thenReturn(1L);
+
+            var resultSummary = scoreBoard.getSummary();
+
+            assertThat(resultSummary).containsExactly(match3, match2, match4, match1);
         }
     }
 
