@@ -28,7 +28,8 @@ public class InMemoryMatchRepository implements MatchRepository {
 
     @Override
     public List<Match> findAll() {
-        throw new UnsupportedOperationException("Not implemented");
+        // TODO: separate the domain model from the data model later
+        return matches.values().stream().toList();
     }
 
     @Override
