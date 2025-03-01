@@ -45,6 +45,9 @@ public class InMemoryMatchRepository implements MatchRepository {
 
     @Override
     public void updateScore(Match.MatchSides sides, int homeScore, int awayScore) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (!matches.containsKey(sides)) {
+            throw new NoSuchElementException("Match not found");
+        }
+        matches.get(sides).updateScore(homeScore, awayScore);
     }
 }
