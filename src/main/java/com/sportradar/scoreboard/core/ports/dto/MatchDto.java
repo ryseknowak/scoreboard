@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.core.ports.types;
+package com.sportradar.scoreboard.core.ports.dto;
 
 import lombok.*;
 

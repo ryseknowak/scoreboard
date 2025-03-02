@@ -1,6 +1,6 @@
-package com.sportradar.scoreboard.core.ports;
+package com.sportradar.scoreboard.core.ports.incoming;
 
-import com.sportradar.scoreboard.core.ports.types.MatchDto;
+import com.sportradar.scoreboard.core.ports.dto.MatchDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;

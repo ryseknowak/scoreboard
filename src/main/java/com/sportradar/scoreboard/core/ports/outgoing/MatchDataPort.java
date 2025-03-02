@@ -1,6 +1,6 @@
-package com.sportradar.scoreboard.core.ports;
+package com.sportradar.scoreboard.core.ports.outgoing;
 
-import com.sportradar.scoreboard.core.ports.types.MatchDto;
+import com.sportradar.scoreboard.core.ports.dto.MatchDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  *
  * @see MatchDto for more details about the match schema.
  */
-public interface MatchRepository {
+public interface MatchDataPort {
 
     /**
      * Creates new match.

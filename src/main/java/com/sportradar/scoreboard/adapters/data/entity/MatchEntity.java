@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.data.entity;
+package com.sportradar.scoreboard.adapters.data.entity;
 
 import lombok.*;
 

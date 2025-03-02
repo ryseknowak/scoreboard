@@ -1,10 +1,11 @@
 package com.sportradar.scoreboard.endtoend;
 
-import com.sportradar.scoreboard.core.ports.LiveScoreBoard;
-import com.sportradar.scoreboard.core.ports.types.MatchDto;
+import com.sportradar.scoreboard.adapters.data.adapter.MatchDataAdapter;
+import com.sportradar.scoreboard.adapters.data.mapper.MatchEntityMapper;
+import com.sportradar.scoreboard.adapters.data.repository.InMemoryMatchRepository;
+import com.sportradar.scoreboard.core.ports.dto.MatchDto;
+import com.sportradar.scoreboard.core.ports.incoming.LiveScoreBoard;
 import com.sportradar.scoreboard.core.service.ScoreBoardService;
-import com.sportradar.scoreboard.data.InMemoryMatchRepository;
-import com.sportradar.scoreboard.data.mapper.MatchEntityMapper;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ class ScoreBoardEndToEndTest {
 
     @BeforeEach
     void setUp() {
-        scoreBoard = new ScoreBoardService(new InMemoryMatchRepository(new HashMap<>(), MatchEntityMapper.INSTANCE));
+        scoreBoard = new ScoreBoardService(new MatchDataAdapter(MatchEntityMapper.INSTANCE, new InMemoryMatchRepository(new HashMap<>())));
     }
 
     @Test
