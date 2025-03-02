@@ -1,8 +1,8 @@
 package com.sportradar.scoreboard.core.service;
 
-import com.sportradar.scoreboard.core.ports.LiveScoreBoard;
-import com.sportradar.scoreboard.core.ports.MatchRepository;
-import com.sportradar.scoreboard.core.ports.types.MatchDto;
+import com.sportradar.scoreboard.core.ports.dto.MatchDto;
+import com.sportradar.scoreboard.core.ports.incoming.LiveScoreBoard;
+import com.sportradar.scoreboard.core.ports.outgoing.MatchDataPort;
 import lombok.AllArgsConstructor;
 
 import java.util.Comparator;
@@ -14,18 +14,18 @@ import static io.micrometer.common.util.StringUtils.isBlank;
 @AllArgsConstructor
 public class ScoreBoardService implements LiveScoreBoard {
 
-    private MatchRepository matchRepository;
+    private MatchDataPort matchDataPort;
 
     @Override
     public void startGame(String homeTeam, String awayTeam) {
         validateNewMatchCreation(homeTeam, awayTeam);
-        matchRepository.save(new MatchDto(homeTeam, awayTeam));
+        matchDataPort.save(new MatchDto(homeTeam, awayTeam));
     }
 
     @Override
     public void endGame(String homeTeam, String awayTeam) {
         validateTeams(homeTeam, awayTeam);
-        matchRepository.deleteByTeams(homeTeam, awayTeam);
+        matchDataPort.deleteByTeams(homeTeam, awayTeam);
     }
 
     @Override
@@ -34,14 +34,14 @@ public class ScoreBoardService implements LiveScoreBoard {
         if (homeScore < 0 || awayScore < 0) {
             throw new IllegalArgumentException("Score cannot be negative");
         }
-        matchRepository.updateScore(homeTeam, awayTeam, homeScore, awayScore);
+        matchDataPort.updateScore(homeTeam, awayTeam, homeScore, awayScore);
     }
 
     @Override
     public List<MatchDto> getSummary() {
         var byTotalScoreReversedComparator = Comparator.comparingInt(MatchDto::getTotalScore).reversed();
         var byStartTimestampReversedComparator = Comparator.comparingLong(MatchDto::getStartTimestamp).reversed();
-        return matchRepository.findAll().stream()
+        return matchDataPort.findAll().stream()
                 .sorted(byTotalScoreReversedComparator
                         .thenComparing(byStartTimestampReversedComparator))
                 .toList();
@@ -49,7 +49,7 @@ public class ScoreBoardService implements LiveScoreBoard {
 
     private void validateNewMatchCreation(String homeTeam, String awayTeam) {
         validateTeams(homeTeam, awayTeam);
-        if (matchRepository.isTeamPlaying(homeTeam) || matchRepository.isTeamPlaying(awayTeam)) {
+        if (matchDataPort.isTeamPlaying(homeTeam) || matchDataPort.isTeamPlaying(awayTeam)) {
             throw new IllegalArgumentException("Team is already playing");
         }
     }

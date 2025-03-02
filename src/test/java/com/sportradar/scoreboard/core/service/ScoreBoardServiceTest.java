@@ -1,7 +1,7 @@
 package com.sportradar.scoreboard.core.service;
 
-import com.sportradar.scoreboard.core.ports.MatchRepository;
-import com.sportradar.scoreboard.core.ports.types.MatchDto;
+import com.sportradar.scoreboard.core.ports.dto.MatchDto;
+import com.sportradar.scoreboard.core.ports.outgoing.MatchDataPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 class ScoreBoardServiceTest {
 
     @Mock
-    private MatchRepository matchRepository;
+    private MatchDataPort matchDataPort;
     @InjectMocks
     private ScoreBoardService scoreBoard;
 
@@ -35,12 +35,12 @@ class ScoreBoardServiceTest {
             var homeTeam = "team1";
             var awayTeam = "team2";
             var argCaptor = ArgumentCaptor.forClass(MatchDto.class);
-            when(matchRepository.isTeamPlaying(homeTeam)).thenReturn(false);
-            when(matchRepository.isTeamPlaying(awayTeam)).thenReturn(false);
+            when(matchDataPort.isTeamPlaying(homeTeam)).thenReturn(false);
+            when(matchDataPort.isTeamPlaying(awayTeam)).thenReturn(false);
 
             scoreBoard.startGame(homeTeam, awayTeam);
 
-            verify(matchRepository).save(argCaptor.capture());
+            verify(matchDataPort).save(argCaptor.capture());
             var savedMatch = argCaptor.getValue();
             assertThat(savedMatch)
                     .usingRecursiveComparison()
@@ -64,7 +64,7 @@ class ScoreBoardServiceTest {
 
         @Test
         void startGameShouldThrowExceptionWhenHomeTeamIsAlreadyPlaying() {
-            when(matchRepository.isTeamPlaying("home")).thenReturn(true);
+            when(matchDataPort.isTeamPlaying("home")).thenReturn(true);
 
             assertThatThrownBy(() -> scoreBoard.startGame("home", "away"))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -73,8 +73,8 @@ class ScoreBoardServiceTest {
 
         @Test
         void startGameShouldThrowExceptionWhenAwayTeamIsAlreadyPlaying() {
-            when(matchRepository.isTeamPlaying("home")).thenReturn(false);
-            when(matchRepository.isTeamPlaying("away")).thenReturn(true);
+            when(matchDataPort.isTeamPlaying("home")).thenReturn(false);
+            when(matchDataPort.isTeamPlaying("away")).thenReturn(true);
 
             assertThatThrownBy(() -> scoreBoard.startGame("home", "away"))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -93,7 +93,7 @@ class ScoreBoardServiceTest {
 
             scoreBoard.endGame(homeTeam, awayTeam);
 
-            verify(matchRepository).deleteByTeams(homeTeamArgCaptor.capture(), awayTeamArgCaptor.capture());
+            verify(matchDataPort).deleteByTeams(homeTeamArgCaptor.capture(), awayTeamArgCaptor.capture());
             assertThat(homeTeamArgCaptor.getValue()).isEqualTo(homeTeam);
             assertThat(awayTeamArgCaptor.getValue()).isEqualTo(awayTeam);
         }
@@ -126,7 +126,7 @@ class ScoreBoardServiceTest {
 
             scoreBoard.updateScore(homeTeam, awayTeam, homeScore, awayScore);
 
-            verify(matchRepository).updateScore(homeTeam, awayTeam, homeScore, awayScore);
+            verify(matchDataPort).updateScore(homeTeam, awayTeam, homeScore, awayScore);
         }
 
         @ParameterizedTest
@@ -155,7 +155,7 @@ class ScoreBoardServiceTest {
 
         @BeforeEach
         void setUp() {
-            when(matchRepository.findAll()).thenReturn(List.of(match1, match2, match3, match4));
+            when(matchDataPort.findAll()).thenReturn(List.of(match1, match2, match3, match4));
         }
 
         @Test

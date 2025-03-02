@@ -1,7 +1,7 @@
-package com.sportradar.scoreboard.data.mapper;
+package com.sportradar.scoreboard.adapters.data.mapper;
 
-import com.sportradar.scoreboard.core.ports.types.MatchDto;
-import com.sportradar.scoreboard.data.entity.MatchEntity;
+import com.sportradar.scoreboard.adapters.data.entity.MatchEntity;
+import com.sportradar.scoreboard.core.ports.dto.MatchDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
